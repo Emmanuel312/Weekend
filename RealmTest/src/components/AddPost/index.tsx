@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, TouchableOpacity, Text, Button, TextInput } from 'react-native';
+import React, { useEffect } from 'react';
 import { useCreatePost, PostInput } from '../../services/mutations/post';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-// import { Container } from './styles';
+import { Container, InputView, Input, AddButton, AddText } from './styles';
+import getRealm from '../../services/realm';
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required(),
@@ -19,35 +19,59 @@ const AddPost: React.FC = () => {
     });
   }
 
+  useEffect(() => {
+    async function savePost() {
+      if (data) {
+        const { id, title, description } = data.createPost;
+
+        const post = {
+          id,
+          title,
+          description,
+        };
+        const realm = await getRealm();
+
+        realm.write(() => {
+          realm.create('Post', post);
+        });
+        console.log(data);
+      }
+    }
+
+    savePost();
+  }, [data]);
+
   return (
-    <View>
+    <Container>
       <Formik
         initialValues={{} as PostInput}
         validationSchema={validationSchema}
         onSubmit={handleCreatePost}>
         {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-          <View>
-            <TextInput
-              style={{ borderWidth: 1, borderColor: '#000' }}
+          <InputView>
+            <Input
+              error={!!errors.title}
+              placeholder="Título"
               onChangeText={handleChange('title')}
               onBlur={handleBlur('title')}
               value={values.title}
             />
 
-            <TextInput
-              style={{ borderWidth: 1, borderColor: '#000' }}
+            <Input
+              error={!!errors.description}
+              placeholder="Descrição"
               onChangeText={handleChange('description')}
               onBlur={handleBlur('description')}
               value={values.description}
             />
-            <Button onPress={handleSubmit} title="Submit" />
 
-            <Text>{errors.title}</Text>
-            <Text>{errors.description}</Text>
-          </View>
+            <AddButton onPress={handleSubmit}>
+              <AddText>{errors.title || 'ADICIONAR'}</AddText>
+            </AddButton>
+          </InputView>
         )}
       </Formik>
-    </View>
+    </Container>
   );
 };
 

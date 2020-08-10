@@ -1,17 +1,17 @@
 import { useQuery, gql } from '@apollo/client';
 
-export interface Post {
+export interface IPost {
   id: number;
   title: string;
   description: string;
 }
 
 interface IGetPostsResponse {
-  getPosts: Post[];
+  getPosts: IPost[];
 }
 
 interface IGetPostResponse {
-  getPost: Post;
+  getPost: IPost;
 }
 
 interface IGetPostInput {

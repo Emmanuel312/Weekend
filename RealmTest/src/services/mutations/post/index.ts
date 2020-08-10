@@ -1,9 +1,13 @@
 import { gql, useMutation } from '@apollo/client';
-import { Post } from '../../queries/post';
+import { IPost } from '../../queries/post';
 
 export interface PostInput {
   title: string;
   description: string;
+}
+
+export interface CreatePostResult {
+  createPost: IPost;
 }
 
 export function useCreatePost() {
@@ -17,5 +21,5 @@ export function useCreatePost() {
     }
   `;
 
-  return useMutation<Post, { post: PostInput }>(mutation);
+  return useMutation<CreatePostResult, { post: PostInput }>(mutation);
 }
